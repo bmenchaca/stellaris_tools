@@ -1,31 +1,29 @@
-stellaris-text = ws value ws
-begin-object    = ws %x7B ws  	; { left curly bracket
-end-object      = ws %x7D ws  	; } right curly bracket
-name-separator  = ws %x3D ws  	; =
-      ws = *(
-              %x20 /            ; Space
-              %x09 /            ; Horizontal tab
-              %x0A /            ; Line feed or New line
-              %x0D )            ; Carriage return
-			  
-value = object / number / string
 
-object = begin-object [ member *(value-separator member) ]
-		 end-object
-member = string name-separator value
+lower letter	= "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" 
+		| "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T"
+		| "U" | "V" | "W" | "X" | "Y" | "Z" ;
+upper letter	= "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j"
+		| "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t"
+		| "u" | "v" | "w" | "x" | "y" | "z" ;
+letter = lower letter | upper letter ;
+white space = " " | "\t" | "\r" | "\n" ;
 
-number = [ minus ] int [ frac ]
-decimal-point = %x2E		; .
-digit1-9 = %x31-%x39		; 1 - 9
-frac = decimal-point 1*DIGIT
-int = zero / ( digit1-9 *DIGIT )
-minus = %x2D			; -
-zero = %x30			; 0
+digit exluding zero = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
+decimal symbol = "." ;
+digit = "0" | digit excluding zero ;
+natural number = digit exluding zero, { digit } ;
+integer = "0" | [ "-" ], natural number ;
+decimal = integer, decimal symbol, digit, { digit } ;
 
-quotation-mark = %x22		; "
-unescaped = %x5F / %x41-%x5A / %x61-%x7A	; _ / A - Z / a - z 
-char = unescaped
-string = quotation-mark *char quotation-mark
+symbol = "=" | "{" | "}" ;
+character = letter | digit | symbol | "_" ;
+string = letter, { letter | digit } ;
+identifier = string, { "." | "_" , string | natural number } ;
+terminal = "'" , string , "'" |
+	   '"' , string , '"' ;
 
+lhs = identifier | " } ";
+rhs	= identifier | terminal | "{";
 
-
+rule = { white space }, lhs , "=" , rhs , white space ;
+grammar = { rule } ;
